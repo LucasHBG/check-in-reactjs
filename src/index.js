@@ -5,6 +5,9 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 
+//Import here .env variables for your keys
+require('dotenv').config();
+
 ReactDOM.render(
   <StrictMode>
     <ColorModeScript />
