@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import { Link, Stack, Tag, Text } from '@chakra-ui/react';
+import React, { Component } from 'react';
 
 class CurrentDate extends Component {
     render() {
@@ -9,10 +10,21 @@ class CurrentDate extends Component {
 
         return (
             <div>
+                <Stack spacing={3}>
 
-                Data: {day}/{month}/{year}
+                    <Text fontSize="md">
+                        Data: {day}/{month}/{year}
+                    </Text>
 
-            </div>
+                    <Text fontSize="md">
+                        <Tag size="lg">
+                            Made by <Link href="https://github.com/LucasHBG" marginLeft='5px' color='tomato' isExternal> @LucasHBG </Link>
+
+                        </Tag>
+                    </Text>
+                </Stack>
+
+            </div >
         )
     }
 

@@ -1,116 +1,101 @@
+import { Box, Stack, Text } from '@chakra-ui/react';
 import React, { Component } from 'react';
 
 const { REACT_APP_GOOGLE_API_KEY } = process.env;
 
-const axios = require("axios");
+export class GetAddress extends Component {
 
-class GetAddress extends Component {
+    constructor(props) {
+        super(props);
 
-
-    constructor() {
-        super();
-
-        this.state = { coordenates: 'Loading...', latitude: 'Loading...', longitude: 'Loading...' }
+        this.state = {
+            latitude: null,
+            longitude: null,
+            userAddress: 'Loading...',
+        }
+        this.getLocation = this.getLocation.bind(this);
+        this.getCoordinates = this.getCoordinates.bind(this);
+        this.geocodeCoordinates = this.geocodeCoordinates.bind(this);
     }
 
     render() {
 
         return (
             <div>
-                {/* {this.GetLocation(this.state.latitude, this.state.longitude)} */}
-                Longitude: {this.state.longitude}
-                <br />
-                Latitude: {this.state.latitude}
-                <br />
-                Coordenates: {this.state.coordenates}
+                <Stack spacing={2}>
+
+                    <Text fontSize="md">
+                        Address:
+                    </Text>
+
+                    <Text fontSize="md">
+                        {this.state.userAddress}
+                    </Text>
+                    <Box display="grid" placeItems="center">
+                        {
+                            this.state.latitude && this.state.longitude
+                                ? <img src={`https://maps.googleapis.com/maps/api/staticmap?center=${this.state.latitude},${this.state.longitude}&zoom=15&maptype=roadmap&size=350x350&markers=color:red%7C${this.state.latitude},${this.state.longitude}&key=${REACT_APP_GOOGLE_API_KEY}`} alt='' />
+                                : null
+                        }
+                    </Box>
+                </Stack>
             </div>
 
         );
 
     }
 
-    GetLocation = async (latitude, longitude) => {
-
-        if (latitude && longitude) {
-            var response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json?'
-                + 'latlng=' + latitude + ',' + longitude + '&key=' + REACT_APP_GOOGLE_API_KEY);
-
-
-            console.log(response.data);
-            ///Verify if google geolocation api have found user's location
-            response = await response.data.results[0].formatted_address
-                ? response.data.results[0].formatted_address
-                : 'I could not get your location 😥';
-
-
-            this.setState = ({
-                latitude: latitude,
-                longitude: longitude,
-                //coordenates: response.toString(),
-            }, () => {
-                console.log('Inside callback>: '+ response);
-            });
-        }
-        else
-            console.log("Loading data...");
-
-    }
-
-    async componentDidMount() {
-        // let response;
-
-        // await axios.get('http://ip-api.com/json/?lang=pt-BR').then((result) => {
-
-        //     response = result.data;
-        //     this.setState({
-        //         latitude: 20,
-        //         coordenates: result.data,
-        //     });
-        //     console.log(latitude);
-        //     console.log('Coordenadas: ' + coordenates);
-        // }).catch((err) => {
-        //     console.log('Mensagem de erro: ' + err);
-        //     response = false;
-        // });
-
-        // console.log(response);
-
+    getLocation() {
         if (navigator.geolocation) {
-            // check if geolocation is supported/enabled on current browser
-            await navigator.geolocation.getCurrentPosition(
-                (position) => {
-
-                    // for when getting location is a success
-                    this.GetLocation(position.coords.latitude, position.coords.longitude);
-
-                }
-            );
-            return true;
+            navigator.geolocation.getCurrentPosition(this.getCoordinates, this.handleLocationError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
         }
-
-
-        // geolocation is not supported
-        // get your location some other way
-        //alert('O serviço de Geolocalização não está habilitado para o seu navegador.')
-
     }
 
-    // async ipLookUp() {
-    //     let response;
+    getCoordinates(position) {
+        this.setState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+        })
+        this.geocodeCoordinates();
+    }
 
-    //     await axios.get('http://ip-api.com/json/?lang=pt-BR').then((result) => {
+    geocodeCoordinates() {
+        fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.state.latitude},${this.state.longitude}&key=${REACT_APP_GOOGLE_API_KEY}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                this.setState({
+                    userAddress: data.results[0].formatted_address
+                })
+            })
+            .catch(error => alert(error))
+    }
 
-    //         response = result.data;
-    //         console.log(response);
+    handleLocationError(error) {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+            default:
+                alert("An unknown error occurred.");
+        }
+    }
 
-    //     }).catch((err) => {
-    //         console.log('Mensagem de erro: ' + err);
-    //         response = false;
-    //     });
+    componentDidMount() {
+        this.getLocation();
+    }
 
-    //     console.log(response);
-
-    // }
 }
 
 export default GetAddress;

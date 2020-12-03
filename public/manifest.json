@@ -1,11 +1,16 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Check-In",
+  "name": "Check-In website for remote authentication based on user's current location",
   "icons": [
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "logo72.png",
+      "type": "image/png",
+      "sizes": "72x72"
     },
     {
       "src": "logo192.png",
