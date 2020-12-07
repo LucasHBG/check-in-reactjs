@@ -13,7 +13,7 @@ class CurrentDate extends Component {
                 <Stack spacing={3}>
 
                     <Text fontSize="md">
-                        Data: {day}/{month}/{year}
+                        Date: {month}/{day}/{year}
                     </Text>
 
                     <Text fontSize="md">
